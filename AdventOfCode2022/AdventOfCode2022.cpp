@@ -8,8 +8,7 @@ using namespace std;
 
 string getSourcePath();
 struct inputResult;
-inputResult* evaluteInput(string userInput);
-inline int digitToInt(char c);
+inputResult* evaluteInput(string* userInput);
 
 int main()
 {
@@ -74,10 +73,6 @@ struct inputResult {
     bool test;
 };
 
-inline int digitToInt(char c) {
-    return c - '0';
-}
-
 inputResult* evaluteInput(string* userInput) {
 
     //Initialise the inputResult with false validity, so we can return it directly on all failing branches
@@ -91,17 +86,18 @@ inputResult* evaluteInput(string* userInput) {
     switch (sLength) {
         case 1:
             //If the string is one char long, then this is only valid if this is a day number
-            c0 = userInput->[0];
+            c0 = (*userInput)[0];
             if (isdigit(c0)) {
                 output->day = c0 - '0';
                 output->test = false;
                 output->valid = output->day > 0;
             }
+            break;
 
         case 2:
             //If it is two chars long, could be a 2 digit day or a 1 digit day with the test flag
-            c0 = userInput->[0];
-            c1 = userInput->[1];
+            c0 = (*userInput)[0];
+            c1 = (*userInput)[1];
             if (isdigit(c0)) {
                 if (c1 == 't') {
                     output->day = c0 - '0';
@@ -110,22 +106,32 @@ inputResult* evaluteInput(string* userInput) {
                 } else if (isdigit(c1)) {
                     output->day = 10 * (c0 - '0') + c1 - '0';
                     output->test = false;
-                    output->valid = output->day > 0;
+                    output->valid = output->day > 0 && output->day < 26;
+                } else {
+                    //Invalid, no action needed
                 }
-
-
-
             } else {
                 //Invalid, no action needed
             }
+            break;
 
         case 3:
-
-
-
+            //If it is three long, then it must be a two digit day followed by the test data flag
+            c0 = (*userInput)[0];
+            c1 = (*userInput)[1];
+            c2 = (*userInput)[2];
+            if (isdigit(c0) && isdigit(c1) && c2 == 't') {
+                output->day = 10 * (c0 - '0') + c1 - '0';
+                output->test = true;
+                output->valid = output->day > 0 && output->day < 26;
+            } else {
+                //invalid - no action needed
+            }
+            break;
 
         default:
             //Do nothing - string cannot be valid and output is already in invalid state
+            break;
     }
 
     return output;
