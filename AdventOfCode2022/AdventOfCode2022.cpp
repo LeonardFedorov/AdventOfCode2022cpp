@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <ctype.h>
+#include <sstream>
 
 using namespace std;
 
@@ -8,7 +9,7 @@ using namespace std;
 
 string getSourcePath();
 struct inputResult;
-inputResult* evaluteInput(string* userInput);
+inputResult* evaluateInput(string* userInput);
 
 int main()
 {
@@ -26,15 +27,13 @@ int main()
     //Get a line from the user and give a pointer to the result to the input analysis
     getline(cin, userInput);
 
-    parsedInput = evaluteInput(&userInput);
-
+    parsedInput = evaluateInput(&userInput);
 
     const char* one = "1";
 
     loadPath = sourcePath + one + extension;
 
     std::cout << loadPath;
-
 
     return 0;
 
@@ -73,65 +72,42 @@ struct inputResult {
     bool test;
 };
 
-inputResult* evaluteInput(string* userInput) {
+inputResult* evaluateInput(string* userInput) {
 
     //Initialise the inputResult with false validity, so we can return it directly on all failing branches
     inputResult* output = new inputResult;
     output->valid = false;
 
-    int sLength = userInput->length();
-    char c0, c1, c2;
+    //Check string length for validity
+    if (userInput->length() > 0 && userInput->length() < 4) {
 
-    //Break down cases based on string length
-    switch (sLength) {
-        case 1:
-            //If the string is one char long, then this is only valid if this is a day number
-            c0 = (*userInput)[0];
-            if (isdigit(c0)) {
-                output->day = c0 - '0';
-                output->test = false;
-                output->valid = output->day > 0;
-            }
-            break;
+        istringstream input (*userInput);
 
-        case 2:
-            //If it is two chars long, could be a 2 digit day or a 1 digit day with the test flag
-            c0 = (*userInput)[0];
-            c1 = (*userInput)[1];
-            if (isdigit(c0)) {
-                if (c1 == 't') {
-                    output->day = c0 - '0';
-                    output->test = true;
-                    output->valid = output->day > 0;
-                } else if (isdigit(c1)) {
-                    output->day = 10 * (c0 - '0') + c1 - '0';
+        if (isdigit(input.peek())) {
+
+            //since the first char is a number, extract the day
+            int dayValue;
+            input >> dayValue;
+            output->day = dayValue;
+
+            //Check day is in valid range
+            if (dayValue > 0 && dayValue < 26) {
+
+                //Check if the string has ended. If it has, then this is a valid numeric string
+                if (input.peek() == EOF) {
+                    output->valid = true;
                     output->test = false;
-                    output->valid = output->day > 0 && output->day < 26;
+                } else if (input.get() == 't') {
+                    output->valid = true;
+                    output->test = true;
                 } else {
-                    //Invalid, no action needed
+                    //Do nothing, input is invalid
                 }
-            } else {
-                //Invalid, no action needed
-            }
-            break;
 
-        case 3:
-            //If it is three long, then it must be a two digit day followed by the test data flag
-            c0 = (*userInput)[0];
-            c1 = (*userInput)[1];
-            c2 = (*userInput)[2];
-            if (isdigit(c0) && isdigit(c1) && c2 == 't') {
-                output->day = 10 * (c0 - '0') + c1 - '0';
-                output->test = true;
-                output->valid = output->day > 0 && output->day < 26;
-            } else {
-                //invalid - no action needed
             }
-            break;
 
-        default:
-            //Do nothing - string cannot be valid and output is already in invalid state
-            break;
+        }
+
     }
 
     return output;
