@@ -5,35 +5,52 @@
 
 using namespace std;
 
-//Declare functions in this file
+//Data type to hold results data from the analysis of the user's input
+struct inputResult {
+    bool valid;
+    int day;
+    bool test;
+};
+
+//Declare functions in this file that are defined further down
 
 string getSourcePath();
-struct inputResult;
 inputResult* evaluateInput(string* userInput);
 
 int main()
 {
     
+    //Print the intro message
+    cout << "#####################\n";
+    cout << "#Advent Of Code 2022#\n";
+    cout << "#####################\n";
+
     //Set up the filepath to the input data
     string sourcePath = getSourcePath();
     string extension = "Input.txt";
     string test = "Test";
     string loadPath;
 
-    int dayChoice;
     string userInput;
     inputResult* parsedInput;
 
-    //Get a line from the user and give a pointer to the result to the input analysis
-    getline(cin, userInput);
+    while (1) {
 
-    parsedInput = evaluateInput(&userInput);
+        cout << "\nPlease enter a day to calculate. Append a 't' to load the test data set. Type anything else to exit.\n";
 
-    const char* one = "1";
+        //Get a line from the user and give a pointer to the result input analysis
+        getline(cin, userInput);
+        parsedInput = evaluateInput(&userInput);
 
-    loadPath = sourcePath + one + extension;
+        //Exit the loop and end if the input is not a valid day request
+        if (!parsedInput->valid) { break; }
 
-    std::cout << loadPath;
+        //Build the path to the target file to load
+        loadPath = sourcePath + to_string(parsedInput->day) + (parsedInput->test ? test : "") + extension;
+        cout << loadPath << "\n";
+
+    }
+
 
     return 0;
 
@@ -65,13 +82,7 @@ string getSourcePath()
     return sourcePath;
 }
 
-//Data type to hold results data from the analysis of the user's input
-struct inputResult {
-    bool valid;
-    int day;
-    bool test;
-};
-
+//Evalute the User's Input, returning the evaluation in the inputResult data type
 inputResult* evaluateInput(string* userInput) {
 
     //Initialise the inputResult with false validity, so we can return it directly on all failing branches
