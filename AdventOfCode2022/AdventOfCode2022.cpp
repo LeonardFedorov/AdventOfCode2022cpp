@@ -2,6 +2,8 @@
 #include <string>
 #include <ctype.h>
 #include <sstream>
+#include <Windows.h>
+#include <fileapi.h>
 
 using namespace std;
 
@@ -16,6 +18,7 @@ struct inputResult {
 
 string getSourcePath();
 inputResult* evaluateInput(string* userInput);
+void dispatchDay(int day, string* path);
 
 int main()
 {
@@ -33,6 +36,8 @@ int main()
 
     string userInput;
     inputResult* parsedInput;
+    
+    bool reLoop;
 
     while (1) {
 
@@ -43,14 +48,22 @@ int main()
         parsedInput = evaluateInput(&userInput);
 
         //Exit the loop and end if the input is not a valid day request
-        if (!parsedInput->valid) { break; }
-
-        //Build the path to the target file to load
-        loadPath = sourcePath + to_string(parsedInput->day) + (parsedInput->test ? test : "") + extension;
-        cout << loadPath << "\n";
+        if (parsedInput->valid) {
+            //Build the path to the target file to load
+            loadPath = sourcePath + to_string(parsedInput->day) + (parsedInput->test ? test : "") + extension;
+            cout << loadPath << "\n";
+            dispatchDay(parsedInput->day, &loadPath);
+            reLoop = true;
+        } else {
+            reLoop = false;
+        }
+        
+        //Clear the parsedInput as we no longer need it
+        delete parsedInput;
+        
+        if (!reLoop) { break; }
 
     }
-
 
     return 0;
 
@@ -92,6 +105,7 @@ inputResult* evaluateInput(string* userInput) {
     //Check string length for validity
     if (userInput->length() > 0 && userInput->length() < 4) {
 
+        //Wrap string in a stream object to make reading easier
         istringstream input (*userInput);
 
         if (isdigit(input.peek())) {
@@ -123,4 +137,42 @@ inputResult* evaluateInput(string* userInput) {
 
     return output;
 
+}
+
+void dispatchDay(int day, string* path) {
+
+    //Set up variables for code timing
+    LARGE_INTEGER startTick;
+    LARGE_INTEGER endTick;
+    LARGE_INTEGER tickFreq;
+    QueryPerformanceFrequency(&tickFreq);
+
+    HANDLE file;
+    LARGE_INTEGER fileSizeRaw;
+    DWORD* fileRead = new DWORD;
+
+    try {
+        file = CreateFileA(
+            (LPCSTR)path,
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL
+        );
+    } catch (...) {
+        //If any error arises reading the file, exit the function
+        cout << "Could not open file. Attempted to load path: " + *path + "\n";
+        return;
+    }
+
+    GetFileSizeEx(file, &fileSizeRaw);
+    long long fileSize = fileSizeRaw.QuadPart;
+
+    char* fileData = new char[fileSize];
+
+    ReadFile(file, fileData, fileSize, fileRead, NULL);
+
+    return;
 }
