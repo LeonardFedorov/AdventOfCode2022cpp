@@ -1,9 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <ctype.h>
 #include <sstream>
-#include <Windows.h>
-#include <fileapi.h>
+#include <chrono>
 
 using namespace std;
 
@@ -51,7 +51,7 @@ int main()
         if (parsedInput->valid) {
             //Build the path to the target file to load
             loadPath = sourcePath + to_string(parsedInput->day) + (parsedInput->test ? test : "") + extension;
-            cout << loadPath << "\n";
+            //cout << loadPath << "\n";
             dispatchDay(parsedInput->day, &loadPath);
             reLoop = true;
         } else {
@@ -77,7 +77,8 @@ string getSourcePath()
     string dataFolder = "InputData\\Day";
 
     //Declare i outside the loop so we can read its value after the loop finishes
-    int i = sourcePath.length() - 1;
+    //Use 64 bit int to avoid compiler warning
+    int64_t i = sourcePath.length() - 1;
 
     for (; i > -1; i--) {
         if (sourcePath[i] == '\\') {
@@ -142,37 +143,42 @@ inputResult* evaluateInput(string* userInput) {
 void dispatchDay(int day, string* path) {
 
     //Set up variables for code timing
-    LARGE_INTEGER startTick;
-    LARGE_INTEGER endTick;
-    LARGE_INTEGER tickFreq;
-    QueryPerformanceFrequency(&tickFreq);
+    chrono::high_resolution_clock clock;
+    chrono::high_resolution_clock::time_point start;
+    chrono::high_resolution_clock::time_point end;
+    double time;
 
-    HANDLE file;
-    LARGE_INTEGER fileSizeRaw;
-    DWORD* fileRead = new DWORD;
+    //Load the file from disk before timing is begun
+    ifstream file;
+    long long size;
+    char* fileData;
 
-    try {
-        file = CreateFileA(
-            (LPCSTR)path,
-            GENERIC_READ,
-            FILE_SHARE_READ,
-            NULL,
-            OPEN_EXISTING,
-            FILE_ATTRIBUTE_NORMAL,
-            NULL
-        );
-    } catch (...) {
-        //If any error arises reading the file, exit the function
-        cout << "Could not open file. Attempted to load path: " + *path + "\n";
-        return;
+    //Open the file at the end and read the stream position as the size
+    file.open(*path, ios::in | ios::binary | ios::ate);
+    size = file.tellg();
+    fileData = new char[size];
+
+    //Set the pointer back to the beginning and perform the read before closing the file
+    file.seekg(0, ios::beg);
+    file.read(fileData, size);
+    file.close();
+
+    start = clock.now();
+
+    switch (day) {
+
+
+        default:
+            cout << "Not implemented!\n";
+            break;
     }
 
-    GetFileSizeEx(file, &fileSizeRaw);
-    long long fileSize = fileSizeRaw.QuadPart;
 
-    char* fileData = new char[fileSize];
+    end = clock.now();
 
-    ReadFile(file, fileData, fileSize, fileRead, NULL);
+    time = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+    cout << "Execution time (exc. file load): " << time << "\n";
 
     return;
 }
