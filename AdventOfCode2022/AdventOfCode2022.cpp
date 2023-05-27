@@ -14,6 +14,11 @@ struct inputResult {
     bool test;
 };
 
+struct dayResult {
+    string part1;
+    string part2;
+};
+
 //Declare functions in this file that are defined further down
 
 string getSourcePath();
@@ -61,6 +66,7 @@ int main()
         //Clear the parsedInput as we no longer need it
         delete parsedInput;
         
+        //If an invalid input was read, then break out of the loop and end the program
         if (!reLoop) { break; }
 
     }
@@ -155,30 +161,42 @@ void dispatchDay(int day, string* path) {
 
     //Open the file at the end and read the stream position as the size
     file.open(*path, ios::in | ios::binary | ios::ate);
-    size = file.tellg();
-    fileData = new char[size];
 
-    //Set the pointer back to the beginning and perform the read before closing the file
-    file.seekg(0, ios::beg);
-    file.read(fileData, size);
-    file.close();
+    //Check the file was able to open, if not return an error message
+    if (file.is_open()) {
+        size = file.tellg();
+        fileData = new char[size];
 
-    start = clock.now();
+        //Set the pointer back to the beginning and perform the read before closing the file
+        file.seekg(0, ios::beg);
+        file.read(fileData, size);
+        file.close();
 
-    switch (day) {
+        start = clock.now();
+
+        //Initalise the day result struct with non-implemented fields
+        dayResult output;
+        output.part1 = "Not implemented!";
+        output.part2 = "Not implemented!";
 
 
-        default:
-            cout << "Not implemented!\n";
-            break;
+        switch (day) {
+
+
+            //If the day hasn't been coded up, then just return the default state of the output values
+            default:
+                break;
+        }
+
+        //Stop timing and then write the outputs
+        end = clock.now();
+        time = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+        cout << "Part 1: " << output.part1 << "\nPart 2: " << output.part2 << "\n";
+        cout << "Execution time (exc. file load): " << time << "\n";
+    } else {
+        cout << "Could not find source file: " << *path << "\n";
     }
-
-
-    end = clock.now();
-
-    time = chrono::duration_cast<chrono::microseconds>(end - start).count();
-
-    cout << "Execution time (exc. file load): " << time << "\n";
 
     return;
 }
