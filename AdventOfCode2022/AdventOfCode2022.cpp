@@ -1,22 +1,15 @@
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <ctype.h>
 #include <sstream>
 #include <chrono>
 
-using namespace std;
+#include "AoCHeader.h"
 
 //Data type to hold results data from the analysis of the user's input
 struct inputResult {
     bool valid;
     int day;
     bool test;
-};
-
-struct dayResult {
-    string part1;
-    string part2;
 };
 
 //Declare functions in this file that are defined further down
@@ -152,11 +145,11 @@ void dispatchDay(int day, string* path) {
     chrono::high_resolution_clock clock;
     chrono::high_resolution_clock::time_point start;
     chrono::high_resolution_clock::time_point end;
-    double time;
+    __int64 time;
 
     //Load the file from disk before timing is begun
     ifstream file;
-    long long size;
+    int size;
     char* fileData;
 
     //Open the file at the end and read the stream position as the size
@@ -164,7 +157,7 @@ void dispatchDay(int day, string* path) {
 
     //Check the file was able to open, if not return an error message
     if (file.is_open()) {
-        size = file.tellg();
+        size = (int)file.tellg(); //cast to int is fine, since filesize is never going to be more than a few kB
         fileData = new char[size];
 
         //Set the pointer back to the beginning and perform the read before closing the file
@@ -182,6 +175,9 @@ void dispatchDay(int day, string* path) {
 
         switch (day) {
 
+            case 1:
+                output = day1Main(fileData, size);
+                break;
 
             //If the day hasn't been coded up, then just return the default state of the output values
             default:
