@@ -16,8 +16,8 @@ extern "C" {
     //Does not validate if the number is valid and will return a nonsense result if it isn't
     int parseUInt(int length, char* startPoint);
 
-
-
+    //GCD version 1 using Euclidean division algorithm
+    int GCD1(int a, int b);
 
 }
 

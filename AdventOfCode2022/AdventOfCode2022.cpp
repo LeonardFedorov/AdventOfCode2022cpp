@@ -172,11 +172,14 @@ void dispatchDay(int day, string* path) {
         output.part1 = "Not implemented!";
         output.part2 = "Not implemented!";
 
+        int testGCD = 0;
 
         switch (day) {
 
             case 1:
-                output = day1Main(fileData, size);
+                //output = day1Main(fileData, size);
+                testGCD = GCD1(2040, 1560);
+
                 break;
 
             //If the day hasn't been coded up, then just return the default state of the output values
@@ -184,12 +187,14 @@ void dispatchDay(int day, string* path) {
                 break;
         }
 
+        output.part1 = to_string(testGCD);
+
         //Stop timing and then write the outputs
         end = clock.now();
         time = chrono::duration_cast<chrono::microseconds>(end - start).count();
 
         cout << "Part 1: " << output.part1 << "\nPart 2: " << output.part2 << "\n";
-        cout << "Execution time (exc. file load): " << time << "\n";
+        cout << "Execution time (exc. file load): " << time << " microseconds\n";
     } else {
         cout << "Could not find source file: " << *path << "\n";
     }
