@@ -178,7 +178,7 @@ void dispatchDay(int day, string* path) {
 
             case 1:
                 //output = day1Main(fileData, size);
-                testGCD = GCD1(2040, 1560);
+                testGCD = GCD1(3768, 1701);
 
                 break;
 

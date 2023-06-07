@@ -47,4 +47,56 @@ GCD1 PROC
 
 GCD1 ENDP
 
+;Finds GCD of two non-negative numbers, loaded to RCX and RDX by default
+;Uses binary GCD algorithm
+GCD2 PROC
+
+	MOV R8, RCX
+	MOV R9, RDX
+
+	XOR RCX, RCX
+
+	;Count the trailing zeroes and then remove them
+	tzcnt RCX, r8
+	SHR R8, CL
+	MOV R10, RCX
+
+	tzcnt RCX, r9
+	SHR R9, CL
+	MOV R11, RCX
+
+	;Store the lower of the two in R10
+	CMP R10, R11
+	JLE	EndSetup
+		MOV R10, R11
+	EndSetup:
+
+		;Check that R8 contains the greater of the two number
+		CMP R8, R9
+		JGE SkipSwap
+			XCHG R8, R9
+		SkipSwap:
+
+		;Subtract the lower number from the higher number and then remove excess multiples of 2
+		SUB R8, R9
+
+		;If R8 is now zero then we are done
+		CMP R8, 0
+		JE Finalise
+
+		;Otherwise, strip excess 0s from R8
+		tzcnt RCX, R8
+		SHR R8, CL
+
+	JMP EndSetup
+
+	Finalise:
+	MOV rax, R9
+	MOV RCX, R10
+	SHL RAX, CL
+
+	RET
+
+GCD2 ENDP
+
 END	

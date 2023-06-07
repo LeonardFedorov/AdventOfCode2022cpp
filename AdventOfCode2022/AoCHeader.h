@@ -18,7 +18,8 @@ extern "C" {
 
     //GCD version 1 using Euclidean division algorithm
     int GCD1(int a, int b);
-
+    //GCD version 2 using binary division approach
+    int GCD2(int a, int b);
 }
 
 //day functions
