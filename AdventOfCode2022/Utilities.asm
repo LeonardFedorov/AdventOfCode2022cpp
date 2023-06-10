@@ -49,4 +49,52 @@ parseUInt PROC
 	RET
 parseUInt ENDP
 
+
+;RCX and RDX are loaded with the two numbers to find the GCD of
+;No assumption is made about which is larger
+;The numbers will be read as unsigned 64 bit integers
+GCD PROC
+
+	;Start by loading the larger number in R8 and the smaller into R9
+	CMP RCX, RDX	
+	JG	RCXLarger
+
+	MOV R8, RDX
+	MOV R9, RCX
+	JMP EndOfSetup
+
+	RCXLarger:
+	MOV R8, RCX
+	MOV R9, RDX
+
+	EndOfSetup:
+
+	;Remove the commond dividers of two
+	tzcnt RAX, R8
+	tzcnt RDX, R9
+
+
+
+	EndOfDivision:
+
+
+	;First test, is R9 0? If so, R8 is the GCD and we can exit
+	CMP R9, 0
+	
+	JG Continue
+
+	MOV RAX, R8
+	RET	
+
+	Continue:
+
+	;Are both numbers even?
+
+
+
+GCD ENDP
+
+
+
+
 END
