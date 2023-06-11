@@ -22,5 +22,11 @@ extern "C" {
     int GCD2(int a, int b);
 }
 
+//other stuff
+int GCDcpp1(int a, int b);
+
+
+
 //day functions
 dayResult day1Main(char* inputData, int dataLength);
+

@@ -54,8 +54,6 @@ GCD2 PROC
 	MOV R8, RCX
 	MOV R9, RDX
 
-	XOR RCX, RCX
-
 	;Count the trailing zeroes and then remove them
 	tzcnt RCX, r8
 	SHR R8, CL
@@ -63,12 +61,11 @@ GCD2 PROC
 
 	tzcnt RCX, r9
 	SHR R9, CL
-	MOV R11, RCX
 
 	;Store the lower of the two in R10
-	CMP R10, R11
+	CMP R10, RCX
 	JLE	EndSetup
-		MOV R10, R11
+		MOV R10, RCX
 	EndSetup:
 
 		;Check that R8 contains the greater of the two number
@@ -91,7 +88,7 @@ GCD2 PROC
 	JMP EndSetup
 
 	Finalise:
-	MOV rax, R9
+	MOV RAX, R9
 	MOV RCX, R10
 	SHL RAX, CL
 

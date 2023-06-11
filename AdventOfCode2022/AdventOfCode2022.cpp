@@ -178,8 +178,8 @@ void dispatchDay(int day, string* path) {
 
             case 1:
                 //output = day1Main(fileData, size);
-                testGCD = GCD1(3768, 1701);
-
+                //testGCD = GCD1(17 * 17 * 19 * 19 * 2 * 2 * 2 * 2 * 5 * 5 * 23, 29 * 31 * 2 * 2 * 5 * 2 * 2 * 2 * 2 * 2 * 2 * 31 * 3);
+                testGCD = GCDcpp1(17 * 17 * 19 * 19 * 2 * 2 * 2 * 2 * 5 * 5 * 23, 29 * 31 * 2 * 2 * 5 * 2 * 2 * 2 * 2 * 2 * 2 * 31 * 3);
                 break;
 
             //If the day hasn't been coded up, then just return the default state of the output values
@@ -187,11 +187,11 @@ void dispatchDay(int day, string* path) {
                 break;
         }
 
-        output.part1 = to_string(testGCD);
-
         //Stop timing and then write the outputs
         end = clock.now();
         time = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+        output.part1 = to_string(testGCD);
 
         cout << "Part 1: " << output.part1 << "\nPart 2: " << output.part2 << "\n";
         cout << "Execution time (exc. file load): " << time << " microseconds\n";
